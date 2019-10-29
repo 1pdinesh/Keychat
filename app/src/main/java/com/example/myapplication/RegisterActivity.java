@@ -19,12 +19,12 @@ import com.google.firebase.database.FirebaseDatabase;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    EditText user_name, user_email, user_password, user_confirmPassword;
+    EditText user_name, user_email, user_password, user_confirmPassword, user_mobile;
     Button btn_register;
     FirebaseAuth firebaseAuth;
     FirebaseDatabase firebaseDatabase;
-    DatabaseReference reference;
-    String username, email, password, confirmPwd;
+    DatabaseReference reference, reference1;
+    String username, email, password, confirmPwd, mobile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +36,7 @@ public class RegisterActivity extends AppCompatActivity {
         user_password = findViewById(R.id.password);
         user_confirmPassword = findViewById(R.id.confirmPwd);
         btn_register = findViewById(R.id.btn_register);
+        user_mobile = findViewById(R.id.mobile);
 
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -76,6 +77,7 @@ public class RegisterActivity extends AppCompatActivity {
         email = user_email.getText().toString();
         password = user_password.getText().toString();
         confirmPwd = user_confirmPassword.getText().toString();
+        mobile = user_mobile.getText().toString();
 
         if(username.isEmpty())
         {
@@ -88,6 +90,10 @@ public class RegisterActivity extends AppCompatActivity {
         else if(password.isEmpty())
         {
             Toast.makeText(this, "Please enter your password", Toast.LENGTH_SHORT).show();
+        }
+        else if(mobile.isEmpty())
+        {
+            Toast.makeText(this, "Please enter your mobile", Toast.LENGTH_SHORT).show();
         }
         else if(confirmPwd.isEmpty())
         {
@@ -107,10 +113,12 @@ public class RegisterActivity extends AppCompatActivity {
 
     private void sendUserData(){
         firebaseDatabase = FirebaseDatabase.getInstance();
-        reference = firebaseDatabase.getReference("Customer").child(firebaseAuth.getUid());
+        reference = firebaseDatabase.getReference("Chat_Activity").child(firebaseAuth.getUid());
+        reference1 = firebaseDatabase.getReference("Profile_Activity").child(mobile);
         String token =  firebaseAuth.getUid();
-        UserProfile userProfile = new UserProfile(email, username, password, token);
+        UserProfile userProfile = new UserProfile(email, username, password, token, mobile);
         reference.setValue(userProfile);
+        reference1.setValue(userProfile);
     }
 
 }

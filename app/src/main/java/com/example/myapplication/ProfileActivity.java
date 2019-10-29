@@ -27,7 +27,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private EditText username, email, password,token;
+    private EditText username, email, password,token,mobile;
     private Button update;
     private CheckBox show_password;
     DatabaseReference reference;
@@ -46,6 +46,7 @@ public class ProfileActivity extends AppCompatActivity {
         update = findViewById(R.id.btn_update);
         token = findViewById(R.id.token);
         show_password = findViewById(R.id.show_password);
+        mobile = findViewById(R.id.mobile);
 
         show_password.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -65,7 +66,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
-        reference = FirebaseDatabase.getInstance().getReference("Customer").child(firebaseUser.getUid());
+        reference = FirebaseDatabase.getInstance().getReference("Chat_Activity").child(firebaseUser.getUid());
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -74,6 +75,7 @@ public class ProfileActivity extends AppCompatActivity {
                 username.setText(userProfile.getUserName());
                 email.setText(userProfile.getUserEmail());
                 password.setText(userProfile.getUserPassword());
+                mobile.setText(userProfile.getMobile());
                 token.setText(userProfile.getToken());
             }
 
@@ -109,6 +111,7 @@ public class ProfileActivity extends AppCompatActivity {
         username.setEnabled(true);
         email.setEnabled(true);
         password.setEnabled(true);
+        mobile.setEnabled(true);
 
         update.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -116,14 +119,16 @@ public class ProfileActivity extends AppCompatActivity {
                 String name = username.getText().toString();
                 String user_email = email.getText().toString();
                 String passwords = password.getText().toString();
-                DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Customer").child(firebaseUser.getUid());
+                String userMobile = mobile.getText().toString();
+                DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chat_Activity").child(firebaseUser.getUid());
                 String token_id = firebaseUser.getUid();
-                UserProfile userProfile = new UserProfile(user_email, name, passwords, token_id);
+                UserProfile userProfile = new UserProfile(user_email, name, passwords, token_id, userMobile);
                 reference.setValue(userProfile);
 
                 update.setVisibility(View.INVISIBLE);
                 username.setEnabled(false);
                 email.setEnabled(false);
+                mobile.setEnabled(false);
                 password.setEnabled(false);
             }
         });
