@@ -9,16 +9,13 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
-import android.view.InputDevice;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
@@ -50,10 +47,19 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 arrayAdapter = new ArrayAdapter<String>(ChatActivity.this, android.R.layout.simple_list_item_1,myArrayList);
-                UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
+                final UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
                 myArrayList.add(userProfile.getMobile());
                 arrayAdapter.notifyDataSetChanged();
                 listView.setAdapter(arrayAdapter);
+                listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        String a = myArrayList.get(position);
+                        Intent intent = new Intent(ChatActivity.this, MessageActivity.class);
+                        intent.putExtra("name", a);
+                        startActivity(intent);
+                    }
+                });
             }
 
             @Override
@@ -109,10 +115,9 @@ public class ChatActivity extends AppCompatActivity {
                                 reference1.addValueEventListener(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        if(dataSnapshot.exists())
-                                        {
-                                            maxid = dataSnapshot.getChildrenCount();
-                                        }
+
+                                        maxid = dataSnapshot.getChildrenCount();
+
                                     }
 
                                     @Override
@@ -122,7 +127,6 @@ public class ChatActivity extends AppCompatActivity {
                                 });
                                 arrayAdapter = new ArrayAdapter<String>(ChatActivity.this, android.R.layout.simple_list_item_1,myArrayList);
                                 UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
-                                myArrayList.add(userProfile.getUserName());
                                 arrayAdapter.notifyDataSetChanged();
                                 listView.setAdapter(arrayAdapter);
                                 reference1.child(String.valueOf(maxid+1)).setValue(userProfile);
