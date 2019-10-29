@@ -44,7 +44,6 @@ public class ChatActivity extends AppCompatActivity {
 
         firebaseAuth = FirebaseAuth.getInstance();
         listView = findViewById(R.id.ListView);
-        listView.setAdapter(arrayAdapter);
 
     }
 
@@ -75,10 +74,11 @@ public class ChatActivity extends AppCompatActivity {
                         reference.addValueEventListener(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                arrayAdapter = new ArrayAdapter<String>(ChatActivity.this, android.R.layout.simple_list_item_1);
+                                arrayAdapter = new ArrayAdapter<String>(ChatActivity.this, android.R.layout.simple_list_item_1,myArrayList);
                                 UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
                                 myArrayList.add(userProfile.getUserName());
                                 arrayAdapter.notifyDataSetChanged();
+                                listView.setAdapter(arrayAdapter);
                             }
 
                             @Override
