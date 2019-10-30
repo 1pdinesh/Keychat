@@ -7,8 +7,13 @@
     android:layout_height="match_parent"
     tools:context=".ChatActivity">
 
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar"/>
+
     <ListView
         android:id="@+id/ListView"
+        android:layout_below="@+id/toolbar"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:layout_width="match_parent"

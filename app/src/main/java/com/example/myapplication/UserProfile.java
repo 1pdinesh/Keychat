@@ -4,18 +4,16 @@ public class UserProfile {
     public String userEmail;
     public String userName;
     public String userPassword;
-    public String token;
     public String mobile;
 
     public UserProfile(){
 
     }
 
-    public UserProfile(String userEmail, String userName, String userPassword, String token, String mobile) {
+    public UserProfile(String userEmail, String userName, String userPassword, String mobile) {
         this.userEmail = userEmail;
         this.userName = userName;
         this.userPassword = userPassword;
-        this.token = token;
         this.mobile = mobile;
     }
 
@@ -41,14 +39,6 @@ public class UserProfile {
 
     public void setUserPassword(String userPassword) {
         this.userPassword = userPassword;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
     }
 
     public String getMobile() {

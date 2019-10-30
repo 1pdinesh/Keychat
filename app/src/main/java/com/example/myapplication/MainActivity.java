@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText Email, Password;
     private Button Login;
+    private Toolbar toolbar;
     private TextView userRegistration;
     private FirebaseAuth firebaseAuth;
     private TextView forgotPassword;

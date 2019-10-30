@@ -6,32 +6,24 @@
     android:layout_height="match_parent"
     tools:context=".MessageActivity">
 
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar"/>
+
     <EditText
         android:id="@+id/inputMessage"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="20dp"
-        android:layout_marginBottom="10dp"
-        android:layout_width="350dp"
+        android:layout_marginStart="10dp"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"/>
 
     <ImageButton
-        android:id="@+id/camera"
-        android:src="@drawable/ic_action_camera"
+        android:id="@+id/send"
+        android:src="@drawable/ic_action_send"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        android:layout_marginStart="5dp"
         android:layout_width="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_marginEnd="10dp"
         android:layout_height="wrap_content"/>
-
-    <TextView
-        android:id="@+id/User_mobile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:hint="Mobile"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="20dp"
-        android:textColor="#000"
-        android:textSize="20sp" />
 
 </RelativeLayout>

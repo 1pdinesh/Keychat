@@ -6,21 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".ProfileActivity">
 
+    <include
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar"/>
+
     <LinearLayout
         android:id="@+id/linear_user"
+        android:layout_below="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center_horizontal"
         android:padding="16dp">
-
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/token"
-            android:hint="token id"
-            android:enabled="true"
-            android:layout_marginTop="10dp"/>
 
         <EditText
             android:layout_width="match_parent"

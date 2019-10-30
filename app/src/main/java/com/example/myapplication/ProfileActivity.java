@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -27,9 +28,10 @@ import com.google.firebase.database.ValueEventListener;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    private EditText username, email, password,token,mobile;
+    private EditText username, email, password,mobile;
     private Button update;
     private CheckBox show_password;
+    private Toolbar toolbar;
     DatabaseReference reference;
     FirebaseUser firebaseUser;
     FirebaseAuth firebaseAuth;
@@ -44,9 +46,18 @@ public class ProfileActivity extends AppCompatActivity {
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
         update = findViewById(R.id.btn_update);
-        token = findViewById(R.id.token);
         show_password = findViewById(R.id.show_password);
         mobile = findViewById(R.id.mobile);
+        toolbar = findViewById(R.id.toolbar);
+        toolbar.setTitle("Profile");
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
 
         show_password.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -76,7 +87,6 @@ public class ProfileActivity extends AppCompatActivity {
                 email.setText(userProfile.getUserEmail());
                 password.setText(userProfile.getUserPassword());
                 mobile.setText(userProfile.getMobile());
-                token.setText(userProfile.getToken());
             }
 
             @Override
@@ -121,8 +131,7 @@ public class ProfileActivity extends AppCompatActivity {
                 String passwords = password.getText().toString();
                 String userMobile = mobile.getText().toString();
                 DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chat_Activity").child(firebaseUser.getUid());
-                String token_id = firebaseUser.getUid();
-                UserProfile userProfile = new UserProfile(user_email, name, passwords, token_id, userMobile);
+                UserProfile userProfile = new UserProfile(user_email, name, passwords, userMobile);
                 reference.setValue(userProfile);
 
                 update.setVisibility(View.INVISIBLE);

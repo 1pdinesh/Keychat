@@ -115,8 +115,7 @@ public class RegisterActivity extends AppCompatActivity {
         firebaseDatabase = FirebaseDatabase.getInstance();
         reference = firebaseDatabase.getReference("Chat_Activity").child(firebaseAuth.getUid());
         reference1 = firebaseDatabase.getReference("Profile_Activity").child(mobile);
-        String token =  firebaseAuth.getUid();
-        UserProfile userProfile = new UserProfile(email, username, password, token, mobile);
+        UserProfile userProfile = new UserProfile(email, username, password, mobile);
         reference.setValue(userProfile);
         reference1.setValue(userProfile);
     }

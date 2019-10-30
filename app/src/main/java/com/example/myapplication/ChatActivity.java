@@ -3,6 +3,7 @@ package com.example.myapplication;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -31,6 +32,7 @@ public class ChatActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
     private ListView listView;
+    private Toolbar toolbar;
     DatabaseReference reference, reference1, reference2;
     ArrayList<String> myArrayList = new ArrayList<>();
     ArrayAdapter<String> arrayAdapter;
@@ -39,6 +41,9 @@ public class ChatActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
+
+        toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         firebaseAuth = FirebaseAuth.getInstance();
         listView = findViewById(R.id.ListView);
@@ -170,5 +175,13 @@ public class ChatActivity extends AppCompatActivity {
             }
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onBackPressed(){
+        Intent a = new Intent(Intent.ACTION_MAIN);
+        a.addCategory(Intent.CATEGORY_HOME);
+        a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(a);
     }
 }
