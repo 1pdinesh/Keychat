@@ -131,7 +131,8 @@ public class ProfileActivity extends AppCompatActivity {
                 String passwords = password.getText().toString();
                 String userMobile = mobile.getText().toString();
                 DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chat_Activity").child(firebaseUser.getUid());
-                UserProfile userProfile = new UserProfile(user_email, name, passwords, userMobile);
+                String token = firebaseUser.getUid();
+                UserProfile userProfile = new UserProfile(user_email, name, passwords, userMobile, token);
                 reference.setValue(userProfile);
 
                 update.setVisibility(View.INVISIBLE);

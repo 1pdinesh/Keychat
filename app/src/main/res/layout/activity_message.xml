@@ -10,20 +10,40 @@
         android:id="@+id/toolbar"
         layout="@layout/toolbar"/>
 
-    <EditText
-        android:id="@+id/inputMessage"
-        android:layout_alignParentBottom="true"
-        android:layout_marginStart="10dp"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"/>
-
-    <ImageButton
-        android:id="@+id/send"
-        android:src="@drawable/ic_action_send"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginStart="5dp"
+    <ListView
+        android:id="@+id/messageList"
+        android:layout_above="@id/messageLinear"
+        android:scrollbars="vertical"
+        android:layout_below="@+id/toolbar"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+        android:layout_height="match_parent"/>
+
+    <RelativeLayout
+        android:id="@+id/messageLinear"
+        android:padding="5dp"
+        android:background="#fff"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <EditText
+            android:id="@+id/inputMessage"
+            android:hint="Type a message"
+            android:layout_toLeftOf="@+id/send"
+            android:layout_centerVertical="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <ImageButton
+            android:id="@+id/send"
+            android:background="@drawable/ic_action_send"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginStart="5dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"/>
+
+    </RelativeLayout>
 
 </RelativeLayout>
