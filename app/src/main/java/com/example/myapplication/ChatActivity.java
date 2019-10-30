@@ -9,7 +9,9 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,6 +21,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -31,10 +34,12 @@ import java.util.ArrayList;
 public class ChatActivity extends AppCompatActivity {
 
     private FirebaseAuth firebaseAuth;
+    private FirebaseUser firebaseUser;
     private ListView listView;
     private Toolbar toolbar;
     DatabaseReference reference, reference1, reference2;
     ArrayList<String> myArrayList = new ArrayList<>();
+    ArrayList<String> myArrayList1 = new ArrayList<>();
     ArrayAdapter<String> arrayAdapter;
     long maxid = 0;
     @Override
@@ -46,6 +51,7 @@ public class ChatActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser =FirebaseAuth.getInstance().getCurrentUser();
         listView = findViewById(R.id.ListView);
         reference2 = FirebaseDatabase.getInstance().getReference("Users").child(firebaseAuth.getCurrentUser().getUid());
         reference2.addChildEventListener(new ChildEventListener() {
@@ -54,14 +60,17 @@ public class ChatActivity extends AppCompatActivity {
                 arrayAdapter = new ArrayAdapter<String>(ChatActivity.this, android.R.layout.simple_list_item_1,myArrayList);
                 final UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
                 myArrayList.add(userProfile.getMobile());
+                myArrayList1.add(userProfile.getToken());
                 arrayAdapter.notifyDataSetChanged();
                 listView.setAdapter(arrayAdapter);
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                         String a = myArrayList.get(position);
+                        String b = myArrayList1.get(position);
                         Intent intent = new Intent(ChatActivity.this, MessageActivity.class);
                         intent.putExtra("name", a);
+                        intent.putExtra("id",b);
                         startActivity(intent);
                     }
                 });
@@ -160,11 +169,6 @@ public class ChatActivity extends AppCompatActivity {
                 firebaseAuth.signOut();
                 finish();
                 startActivity(new Intent(ChatActivity.this, MainActivity.class));
-                break;
-            }
-
-            case R.id.search:
-            {
                 break;
             }
 

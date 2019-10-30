@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 public class SendReceiveMessage {
 
+    public String message;
     public String sender;
     public String receiver;
 
@@ -10,9 +11,18 @@ public class SendReceiveMessage {
 
     }
 
-    public SendReceiveMessage(String sender, String receiver) {
+    public SendReceiveMessage(String message, String sender, String receiver) {
+        this.message = message;
         this.sender = sender;
         this.receiver = receiver;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public String getSender() {

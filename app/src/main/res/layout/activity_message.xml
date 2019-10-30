@@ -10,12 +10,12 @@
         android:id="@+id/toolbar"
         layout="@layout/toolbar"/>
 
-    <ListView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messageList"
         android:layout_above="@id/messageLinear"
         android:scrollbars="vertical"
         android:layout_below="@+id/toolbar"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
     <RelativeLayout

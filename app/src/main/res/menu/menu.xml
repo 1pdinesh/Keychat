@@ -3,13 +3,6 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item
-        android:id="@+id/search"
-        android:title="Logout"
-        android:icon="@drawable/ic_action_search"
-        app:showAsAction="always">
-    </item>
-
-    <item
         android:id="@+id/friend"
         android:title="Logout"
         android:icon="@drawable/ic_action_friend"
