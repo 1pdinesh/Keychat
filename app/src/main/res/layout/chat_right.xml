@@ -5,11 +5,7 @@
     android:padding="8dp"
     android:layout_height="wrap_content">
 
-    <RelativeLayout
-        android:layout_width="300dp"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_height="wrap_content">
+
 
         <TextView
             android:id="@+id/show_message"
@@ -23,6 +19,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
-    </RelativeLayout>
+        <ImageView
+            android:id="@+id/UserImage"
+            android:layout_alignParentEnd="true"
+            android:layout_marginRight="5dp"
+            android:layout_width="150dp"
+            android:layout_height="150dp"/>
 
 </RelativeLayout>

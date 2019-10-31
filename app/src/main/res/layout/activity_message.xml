@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/back"
     tools:context=".MessageActivity">
 
     <include
@@ -18,40 +19,74 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
+    <ImageView
+        android:id="@+id/MessageImage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
     <RelativeLayout
         android:id="@+id/messageLinear"
         android:padding="5dp"
         android:background="#fff"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:layout_width="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_toLeftOf="@+id/a"
+        android:layout_marginStart="10dp"
+        android:layout_marginBottom="5dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content">
 
         <EditText
             android:id="@+id/inputMessage"
-            android:layout_width="289dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="20dp"
-            android:layout_toLeftOf="@+id/mic"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/gps"
             android:hint="Type a message" />
 
         <ImageButton
-            android:id="@+id/send"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:id="@+id/camera"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="-1dp"
-            android:layout_marginRight="-1dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/ic_action_camera" />
+
+        <ImageButton
+            android:id="@+id/gps"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_toLeftOf="@id/camera"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/ic_action_gps" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/a"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="15dp"
+        android:layout_marginEnd="10dp"
+        android:layout_marginStart="10dp"
+        android:layout_width="wrap_content"
+        android:gravity="center"
+        android:layout_height="wrap_content">
+
+        <ImageButton
+            android:id="@+id/send"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:background="@drawable/ic_action_send" />
 
         <ImageButton
             android:id="@+id/mic"
-            android:layout_width="41dp"
-            android:layout_height="41dp"
-            android:layout_toLeftOf="@+id/send"
-            app:srcCompat="@android:drawable/ic_btn_speak_now" />
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="@drawable/ic_action_voice" />
 
     </RelativeLayout>
 

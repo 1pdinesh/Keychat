@@ -5,6 +5,7 @@ public class SendReceiveMessage {
     public String message;
     public String sender;
     public String receiver;
+    //public String type;
 
     public SendReceiveMessage()
     {
@@ -15,6 +16,7 @@ public class SendReceiveMessage {
         this.message = message;
         this.sender = sender;
         this.receiver = receiver;
+        //this.type = type;
     }
 
     public String getMessage() {
@@ -40,4 +42,12 @@ public class SendReceiveMessage {
     public void setReceiver(String receiver) {
         this.receiver = receiver;
     }
+
+    /*public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }*/
 }

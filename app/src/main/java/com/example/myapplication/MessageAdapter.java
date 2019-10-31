@@ -12,6 +12,12 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
 
 import java.util.List;
 
@@ -51,6 +57,7 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
 
         SendReceiveMessage chat = mChat.get(position);
         holder.show_message.setText(chat.getMessage());
+        //holder.UserImage.setImageBitmap(chat);
     }
 
     @Override
@@ -61,12 +68,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public class ViewHolder extends RecyclerView.ViewHolder
     {
         public TextView show_message;
+        public ImageView UserImage;
 
         public ViewHolder(View itemView)
         {
             super(itemView);
 
             show_message = itemView.findViewById(R.id.show_message);
+            UserImage = itemView.findViewById(R.id.UserImage);
         }
     }
 
