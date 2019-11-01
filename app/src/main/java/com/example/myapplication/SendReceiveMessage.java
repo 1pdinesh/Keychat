@@ -5,18 +5,18 @@ public class SendReceiveMessage {
     public String message;
     public String sender;
     public String receiver;
-    //public String type;
+    public String url;
 
     public SendReceiveMessage()
     {
 
     }
 
-    public SendReceiveMessage(String message, String sender, String receiver) {
+    public SendReceiveMessage(String message, String sender, String receiver, String url) {
         this.message = message;
         this.sender = sender;
         this.receiver = receiver;
-        //this.type = type;
+        this.url = url;
     }
 
     public String getMessage() {
@@ -43,11 +43,11 @@ public class SendReceiveMessage {
         this.receiver = receiver;
     }
 
-    /*public String getType() {
-        return type;
+    public String getUrl() {
+        return url;
     }
 
-    public void setType(String type) {
-        this.type = type;
-    }*/
+    public void setUrl(String url) {
+        this.url = url;
+    }
 }

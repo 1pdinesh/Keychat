@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,6 +18,7 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.InputType;
@@ -34,6 +36,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -42,9 +46,15 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -57,11 +67,13 @@ public class MessageActivity extends AppCompatActivity {
     private FirebaseUser firebaseUser;
     private Toolbar toolbar;
     private Uri filepath;
+    private StorageReference mStorage;
     private RecyclerView recyclerView;
     DatabaseReference reference;
     ArrayList<String> myArrayList = new ArrayList<>();
     ArrayAdapter<String> arrayAdapter;
-    Integer cameraRequest = 1, galleryRequest = 2;
+    private static final int CAMERA_REQUEST_CODE = 5;
+    String timeStamp, mCurrentPhotoPath;;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +82,8 @@ public class MessageActivity extends AppCompatActivity {
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mStorage = FirebaseStorage.getInstance().getReference();
 
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -136,7 +150,8 @@ public class MessageActivity extends AppCompatActivity {
                 String msg = inputMessage.getText().toString();
                 if(!msg.equals(""))
                 {
-                    sendMessage(firebaseUser.getUid(), userid, msg);
+                    String url = "url";
+                    sendMessage(firebaseUser.getUid(), userid, msg, url);
                 }
                 else
                 {
@@ -188,13 +203,14 @@ public class MessageActivity extends AppCompatActivity {
 
     }
 
-    private void sendMessage(String sender, String receiver, String message)
+    private void sendMessage(String sender, String receiver, String message, String url)
     {
         reference = FirebaseDatabase.getInstance().getReference();
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("sender",sender);
         hashMap.put("receiver",receiver);
         hashMap.put("message",message);
+        hashMap.put("url",url);
         //hashMap.put("type",type);
         reference.child("Chats").push().setValue(hashMap);
     }
@@ -227,5 +243,4 @@ public class MessageActivity extends AppCompatActivity {
             }
         });
     }
-
 }
