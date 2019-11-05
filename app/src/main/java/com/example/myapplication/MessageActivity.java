@@ -4,6 +4,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,7 +19,9 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -52,9 +56,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -78,15 +84,14 @@ public class MessageActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private boolean notify = false;
     DatabaseReference reference;
+    File photoFile = null ;
+    String mCurrentPhotoPath;
     ArrayList<String> myArrayList = new ArrayList<>();
     ArrayAdapter<String> arrayAdapter;
-    //private static final int CAMERA_REQUEST_CODE = 100;
-    //private static final int STORAGE_REQUEST_CODE = 200;
     private static final int IMAGE_PICK_CAMERA_CODE = 300;
     private static final int IMAGE_PICK_GALLERY_CODE = 400;
-    String[] cameraPermissions;
-    String[] storagePermissions;
-    Uri image_rui = null;
+    private Uri image_rui = null;
+    public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,8 +101,6 @@ public class MessageActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //cameraPermissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
-        //storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
         mStorage = FirebaseStorage.getInstance().getReference();
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -198,14 +201,15 @@ public class MessageActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         if(items[which].equals("Camera"))
                         {
-                            //startActivity(new Intent(MessageActivity.this, CameraActivity.class));
-                            pickFromCamera();
+                            if(checkPermissionREAD_EXTERNAL_STORAGE(MessageActivity.this))
+                            {
+                                pickFromCamera();
+                            }
 
                         }
                         else if(items[which].equals("Gallery"))
                         {
-                            //startActivity(new Intent(MessageActivity.this, GallaryActivity.class));
-                            showImagePickDialog();
+                            pickFromGallery();
 
                         }
                         else
@@ -220,17 +224,97 @@ public class MessageActivity extends AppCompatActivity {
 
     }
 
-    private void pickFromCamera()
-    {
-        ContentValues cv = new ContentValues();
-        image_rui = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv);
+    public boolean checkPermissionREAD_EXTERNAL_STORAGE(
+            final Context context) {
+        int currentAPIVersion = Build.VERSION.SDK_INT;
+        if (currentAPIVersion >= android.os.Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(context,
+                    Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                if (ActivityCompat.shouldShowRequestPermissionRationale(
+                        (Activity) context,
+                        Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                    showDialog("External storage", context, Manifest.permission.READ_EXTERNAL_STORAGE);
 
-        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, image_rui);
-        startActivityForResult(intent, IMAGE_PICK_CAMERA_CODE);
+                } else {
+                    ActivityCompat
+                            .requestPermissions(
+                                    (Activity) context,
+                                    new String[] { Manifest.permission.READ_EXTERNAL_STORAGE },
+                                    MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                }
+                return false;
+            } else {
+                return true;
+            }
+
+        } else {
+            return true;
+        }
     }
 
-    private void showImagePickDialog()
+    public void showDialog(final String msg, final Context context,
+                           final String permission) {
+        AlertDialog.Builder alertBuilder = new AlertDialog.Builder(context);
+        alertBuilder.setCancelable(true);
+        alertBuilder.setTitle("Permission necessary");
+        alertBuilder.setMessage(msg + " permission is necessary");
+        alertBuilder.setPositiveButton(android.R.string.yes,
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        ActivityCompat.requestPermissions((Activity) context,
+                                new String[] { permission },
+                                MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE);
+                    }
+                });
+        AlertDialog alert = alertBuilder.create();
+        alert.show();
+    }
+
+    private void pickFromCamera()
+    {
+        /*ContentValues cv = new ContentValues();
+        image_rui = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv);
+        finish();*/
+
+        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (cameraIntent.resolveActivity(getPackageManager()) != null)
+        {
+            try
+            {
+                photoFile = createImageFile();
+            }
+            catch (Exception ex)
+            {
+                ex.printStackTrace();
+                return;
+            }
+            if (photoFile != null)
+            {
+                Uri photoURI = FileProvider.getUriForFile(MessageActivity.this,
+                        "com.example.myapplication.fileprovider",
+                        photoFile);
+                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                startActivityForResult(cameraIntent, IMAGE_PICK_CAMERA_CODE);
+            }
+        }
+
+    }
+
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",         /* suffix */
+                storageDir      /* directory */
+        );
+        mCurrentPhotoPath = image.getAbsolutePath();
+        return image;
+    }
+
+    private void pickFromGallery()
     {
         Intent intent = new Intent(Intent.ACTION_PICK);
         intent.setType("image/*");
@@ -247,7 +331,7 @@ public class MessageActivity extends AppCompatActivity {
         hashMap.put("message",message);
         hashMap.put("timestamp",timestamp);
         hashMap.put("type","text");
-        reference.child("Chats").child(sender).setValue(hashMap);
+        reference.child("Chats").push().setValue(hashMap);
     }
 
     private void receiveMessage(final String myid, final String userid)
@@ -275,6 +359,48 @@ public class MessageActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
+            }
+        });
+    }
+
+    private void sendCameraMessage() throws IOException {
+        final ProgressDialog progressDialog = new ProgressDialog(MessageActivity.this);
+        progressDialog.setTitle("Uploading...");
+        progressDialog.show();
+
+        File f = new File(mCurrentPhotoPath);
+        image_rui = Uri.fromFile(f);
+        final String timeStamp = ""+System.currentTimeMillis();
+        String fileNameAndPath = "ChatImages/"+"post_"+timeStamp;
+        Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), image_rui);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 0, baos);
+        final byte[] data = baos.toByteArray();
+        StorageReference ref = FirebaseStorage.getInstance().getReference().child(fileNameAndPath);
+        ref.putBytes(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                progressDialog.dismiss();
+                Task<Uri>uriTask = taskSnapshot.getStorage().getDownloadUrl();
+                while(!uriTask.isSuccessful());
+                String downloadURI = uriTask.getResult().toString();
+                if (uriTask.isSuccessful())
+                {
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                    HashMap<String, Object> hashMap = new HashMap<>();
+                    hashMap.put("sender", firebaseUser.getUid());
+                    hashMap.put("receiver", getIntent().getStringExtra("id"));
+                    hashMap.put("message", downloadURI);
+                    hashMap.put("timestamp", timeStamp );
+                    hashMap.put("type", "image");
+                    databaseReference.child("Chats").push().setValue(hashMap);
+                }
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                e.printStackTrace();
             }
         });
     }
@@ -310,36 +436,38 @@ public class MessageActivity extends AppCompatActivity {
                     hashMap.put("timestamp", timeStamp );
                     hashMap.put("type", "image");
                     databaseReference.child("Chats").push().setValue(hashMap);
-
-                    /*DatabaseReference database = FirebaseDatabase.getInstance().getReference("Chat_Activity")
-                            .child(firebaseUser.getUid());
-                    database.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
-                            if(notify)
-                            {
-                                sendNotification(getIntent().getStringExtra("id"), userProfile.getUserName(),
-                                        "Sent you a photo...");
-                            }
-                            notify = false;
-                        }
-
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });*/
                 }
 
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-
+                e.printStackTrace();
             }
         });
 
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+
+        switch (requestCode)
+        {
+            case MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE:
+            {
+                if(grantResults[0] == PackageManager.PERMISSION_GRANTED)
+                {
+                    pickFromCamera();
+                }
+                else
+                {
+                    Toast.makeText(this, "GET_ACCOUNTS Denied", Toast.LENGTH_SHORT).show();
+                }
+            }
+            break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
     }
 
     @Override
@@ -349,8 +477,8 @@ public class MessageActivity extends AppCompatActivity {
         {
             if(requestCode == IMAGE_PICK_GALLERY_CODE)
             {
-                image_rui = data.getData();
                 try {
+                    image_rui = data.getData();
                     sendImageMessage(image_rui);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -359,7 +487,7 @@ public class MessageActivity extends AppCompatActivity {
             else if(requestCode == IMAGE_PICK_CAMERA_CODE)
             {
                 try {
-                    sendImageMessage(image_rui);
+                    sendCameraMessage();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

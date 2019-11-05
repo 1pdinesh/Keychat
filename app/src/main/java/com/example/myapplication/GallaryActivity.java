@@ -12,13 +12,23 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
@@ -26,6 +36,7 @@ import com.google.firebase.storage.StorageTask;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.UUID;
 
 public class GallaryActivity extends AppCompatActivity {
@@ -33,10 +44,13 @@ public class GallaryActivity extends AppCompatActivity {
     private ImageView imageView;
     private Button btnImage, btnSubmit;
     private StorageReference storageReference;
+    private DatabaseReference reference;
     private FirebaseStorage firebaseStorage;
     private Uri filepath;
     private String mmURL = "";
     private StorageTask uploadTask;
+    private String downloadImageRef;
+    private FirebaseUser user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +63,7 @@ public class GallaryActivity extends AppCompatActivity {
 
         firebaseStorage = FirebaseStorage.getInstance();
         storageReference = firebaseStorage.getReference();
+        user = FirebaseAuth.getInstance().getCurrentUser();
 
         btnImage.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,14 +90,24 @@ public class GallaryActivity extends AppCompatActivity {
             progressDialog.setTitle("Uploading...");
             progressDialog.show();
 
-            StorageReference ref = storageReference.child("images/"+ UUID.randomUUID().toString());
+            final StorageReference ref = storageReference.child("Photos/"+ UUID.randomUUID().toString());
             ref.putFile(filepath)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                            progressDialog.dismiss();
-                            Toast.makeText(GallaryActivity.this, "Uploaded",Toast.LENGTH_SHORT ).show();
-                            finish();
+                            ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+                                    progressDialog.dismiss();
+                                    Toast.makeText(GallaryActivity.this, "Uploaded",Toast.LENGTH_SHORT ).show();
+                                    Uri downloadUri = uri;
+                                    downloadImageRef = downloadUri.toString();
+                                    //reference = FirebaseDatabase.getInstance().getReference("Uploads");
+                                    //Upload upload = new Upload(downloadImageRef, user.getUid());
+                                    //reference.setValue(upload);
+                                    finish();
+                                }
+                            });
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -100,6 +125,7 @@ public class GallaryActivity extends AppCompatActivity {
                         }
                     });
         }
+
     }
 
     @Override

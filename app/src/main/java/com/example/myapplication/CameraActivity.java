@@ -59,11 +59,10 @@ public class CameraActivity extends AppCompatActivity {
     String s;
     Button gonext;
     File photoFile = null ;
+    String mCurrentPhotoPath;
     static final int CAPTURE_IMAGE_REQUEST = 1;
     private FirebaseAuth firebaseAuth;
-    private TextView url;
     private FirebaseAuth mAuth;
-    String mCurrentPhotoPath;
     private static final String IMAGE_DIRECTORY_NAME = "Image";
     private StorageReference mStorageRef;
     private DatabaseReference reference;
@@ -76,7 +75,6 @@ public class CameraActivity extends AppCompatActivity {
         setContentView(R.layout.activity_camera);
 
         imageView =  findViewById(R.id.picture);
-        url = findViewById(R.id.url);
         button = findViewById(R.id.capture);
         firebaseAuth = FirebaseAuth.getInstance();
         buttonupload = findViewById(R.id.save_cloud);
@@ -96,15 +94,21 @@ public class CameraActivity extends AppCompatActivity {
 
                 File f = new File(mCurrentPhotoPath);
                 Uri photoFile = Uri.fromFile(f);
-                StorageReference storageReference = mStorageRef.child("Photos").child(photoFile.getLastPathSegment());
+                final StorageReference storageReference = mStorageRef.child("Photos").child(photoFile.getLastPathSegment());
                 final UploadTask uploadTask = storageReference.putFile(photoFile);
                 uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                     @Override
                     public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                        progressDialog.dismiss();
-                        Toast.makeText(CameraActivity.this, "Success",Toast.LENGTH_SHORT).show();
-                        finish();
-
+                        storageReference.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                            @Override
+                            public void onSuccess(Uri uri) {
+                                progressDialog.dismiss();
+                                Toast.makeText(CameraActivity.this, "Success",Toast.LENGTH_SHORT).show();
+                                Uri downloadURI = uri;
+                                String downloadImageURL = downloadURI.toString();
+                                finish();
+                            }
+                        });
                     }
                 }).addOnFailureListener(new OnFailureListener() {
                             @Override

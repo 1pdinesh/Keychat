@@ -16,4 +16,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
 
+        <ImageView
+            android:id="@+id/show_Image"
+            android:layout_marginLeft="5dp"
+            android:src="@drawable/ic_image_black"
+            android:scaleType="fitStart"
+            android:layout_width="180dp"
+            android:layout_height="180dp"/>
+
 </RelativeLayout>

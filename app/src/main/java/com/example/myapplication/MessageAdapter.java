@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.content.Context;
 import android.content.Intent;
+import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +19,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
+import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -28,13 +31,15 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public static final int MSG_TYPE_RIGHT = 1;
     private Context mContext;
     private List<SendReceiveMessage> mChat;
+    //private List<Upload>imageList;
 
     FirebaseUser fuser;
 
-    public MessageAdapter(Context mContext, List<SendReceiveMessage> mChat)
+    public MessageAdapter(Context mContext, List<SendReceiveMessage> mChat) //List<Upload>imageList)
     {
         this.mChat = mChat;
         this.mContext = mContext;
+        //this.imageList = imageList;
     }
 
     @NonNull
@@ -53,11 +58,23 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     }
 
     @Override
-    public void onBindViewHolder(@NonNull MessageAdapter.ViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
 
         SendReceiveMessage chat = mChat.get(position);
-        holder.show_message.setText(chat.getMessage());
-        //holder.UserImage.setImageBitmap(chat);
+        String type = mChat.get(position).getType();
+        String message = mChat.get(position).getMessage();
+        if(type.equals("text"))
+        {
+            holder.show_message.setVisibility(View.VISIBLE);
+            holder.messageIv.setVisibility(View.GONE);
+            holder.show_message.setText(message);
+        }
+        else
+        {
+            holder.show_message.setVisibility(View.GONE);
+            holder.messageIv.setVisibility(View.VISIBLE);
+            Picasso.get().load(message).placeholder(R.drawable.ic_image_black).into(holder.messageIv);
+        }
     }
 
     @Override
@@ -68,14 +85,14 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.ViewHold
     public class ViewHolder extends RecyclerView.ViewHolder
     {
         public TextView show_message;
-        //public ImageView UserImage;
+        public ImageView messageIv;
 
         public ViewHolder(View itemView)
         {
             super(itemView);
 
             show_message = itemView.findViewById(R.id.show_message);
-            //UserImage = itemView.findViewById(R.id.UserImage);
+            messageIv = itemView.findViewById(R.id.show_Image);
         }
     }
 
