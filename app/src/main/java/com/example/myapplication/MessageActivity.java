@@ -8,8 +8,12 @@ import androidx.core.content.FileProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -38,6 +42,7 @@ import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.ChildEventListener;
@@ -50,8 +55,10 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -63,17 +70,23 @@ public class MessageActivity extends AppCompatActivity {
     private EditText inputMessage;
     MessageAdapter messageAdapter;
     List<SendReceiveMessage>mChat;
+    List<Upload>imageList;
     private ImageButton send,mic,camera,gps;
     private FirebaseUser firebaseUser;
     private Toolbar toolbar;
-    private Uri filepath;
     private StorageReference mStorage;
     private RecyclerView recyclerView;
+    private boolean notify = false;
     DatabaseReference reference;
     ArrayList<String> myArrayList = new ArrayList<>();
     ArrayAdapter<String> arrayAdapter;
-    private static final int CAMERA_REQUEST_CODE = 5;
-    String timeStamp, mCurrentPhotoPath;;
+    //private static final int CAMERA_REQUEST_CODE = 100;
+    //private static final int STORAGE_REQUEST_CODE = 200;
+    private static final int IMAGE_PICK_CAMERA_CODE = 300;
+    private static final int IMAGE_PICK_GALLERY_CODE = 400;
+    String[] cameraPermissions;
+    String[] storagePermissions;
+    Uri image_rui = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -83,8 +96,9 @@ public class MessageActivity extends AppCompatActivity {
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //cameraPermissions = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        //storagePermissions = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
         mStorage = FirebaseStorage.getInstance().getReference();
-
         firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
         inputMessage = findViewById(R.id.inputMessage);
@@ -150,8 +164,7 @@ public class MessageActivity extends AppCompatActivity {
                 String msg = inputMessage.getText().toString();
                 if(!msg.equals(""))
                 {
-                    String url = "url";
-                    sendMessage(firebaseUser.getUid(), userid, msg, url);
+                    sendMessage(firebaseUser.getUid(), userid, msg);
                 }
                 else
                 {
@@ -185,11 +198,15 @@ public class MessageActivity extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         if(items[which].equals("Camera"))
                         {
-                            startActivity(new Intent(MessageActivity.this, CameraActivity.class));
+                            //startActivity(new Intent(MessageActivity.this, CameraActivity.class));
+                            pickFromCamera();
+
                         }
                         else if(items[which].equals("Gallery"))
                         {
-                            startActivity(new Intent(MessageActivity.this, GallaryActivity.class));
+                            //startActivity(new Intent(MessageActivity.this, GallaryActivity.class));
+                            showImagePickDialog();
+
                         }
                         else
                         {
@@ -203,16 +220,34 @@ public class MessageActivity extends AppCompatActivity {
 
     }
 
-    private void sendMessage(String sender, String receiver, String message, String url)
+    private void pickFromCamera()
     {
+        ContentValues cv = new ContentValues();
+        image_rui = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv);
+
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, image_rui);
+        startActivityForResult(intent, IMAGE_PICK_CAMERA_CODE);
+    }
+
+    private void showImagePickDialog()
+    {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent, IMAGE_PICK_GALLERY_CODE);
+    }
+
+    private void sendMessage(String sender, String receiver, String message)
+    {
+        String timestamp = String.valueOf(System.currentTimeMillis());
         reference = FirebaseDatabase.getInstance().getReference();
         HashMap<String, Object> hashMap = new HashMap<>();
         hashMap.put("sender",sender);
         hashMap.put("receiver",receiver);
         hashMap.put("message",message);
-        hashMap.put("url",url);
-        //hashMap.put("type",type);
-        reference.child("Chats").push().setValue(hashMap);
+        hashMap.put("timestamp",timestamp);
+        hashMap.put("type","text");
+        reference.child("Chats").child(sender).setValue(hashMap);
     }
 
     private void receiveMessage(final String myid, final String userid)
@@ -242,5 +277,94 @@ public class MessageActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    private void sendImageMessage(Uri image_rui) throws IOException {
+
+        notify = true;
+        final ProgressDialog progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("Sending image...");
+        progressDialog.show();
+
+        final String timeStamp = ""+System.currentTimeMillis();
+        String fileNameAndPath = "ChatImages/"+"post_"+timeStamp;
+        Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), image_rui);
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        final byte[] data = baos.toByteArray();
+        StorageReference ref = FirebaseStorage.getInstance().getReference().child(fileNameAndPath);
+        ref.putBytes(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                progressDialog.dismiss();
+                Task<Uri>uriTask = taskSnapshot.getStorage().getDownloadUrl();
+                while(!uriTask.isSuccessful());
+                String downloadURI = uriTask.getResult().toString();
+                if (uriTask.isSuccessful())
+                {
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                    HashMap<String, Object> hashMap = new HashMap<>();
+                    hashMap.put("sender", firebaseUser.getUid());
+                    hashMap.put("receiver", getIntent().getStringExtra("id"));
+                    hashMap.put("message", downloadURI);
+                    hashMap.put("timestamp", timeStamp );
+                    hashMap.put("type", "image");
+                    databaseReference.child("Chats").push().setValue(hashMap);
+
+                    /*DatabaseReference database = FirebaseDatabase.getInstance().getReference("Chat_Activity")
+                            .child(firebaseUser.getUid());
+                    database.addValueEventListener(new ValueEventListener() {
+                        @Override
+                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                            UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
+                            if(notify)
+                            {
+                                sendNotification(getIntent().getStringExtra("id"), userProfile.getUserName(),
+                                        "Sent you a photo...");
+                            }
+                            notify = false;
+                        }
+
+                        @Override
+                        public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                        }
+                    });*/
+                }
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+
+            }
+        });
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+
+        if(resultCode == RESULT_OK)
+        {
+            if(requestCode == IMAGE_PICK_GALLERY_CODE)
+            {
+                image_rui = data.getData();
+                try {
+                    sendImageMessage(image_rui);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            else if(requestCode == IMAGE_PICK_CAMERA_CODE)
+            {
+                try {
+                    sendImageMessage(image_rui);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
