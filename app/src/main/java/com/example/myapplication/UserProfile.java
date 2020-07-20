@@ -7,9 +7,7 @@ public class UserProfile {
     public String mobile;
     public String token;
 
-    public UserProfile(){
 
-    }
 
     public UserProfile(String userEmail, String userName, String userPassword, String mobile, String token) {
         this.userEmail = userEmail;
@@ -17,6 +15,9 @@ public class UserProfile {
         this.userPassword = userPassword;
         this.mobile = mobile;
         this.token = token;
+    }
+    public UserProfile(){
+
     }
 
     public String getUserEmail() {

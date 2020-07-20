@@ -4,11 +4,15 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import android.app.ActivityOptions;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Pair;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,8 +26,9 @@ public class MainActivity extends AppCompatActivity {
 
     private EditText Email, Password;
     private Button Login;
+    private TextView welcome, forgetPassword;
     private Toolbar toolbar;
-    private TextView userRegistration;
+    private Button userRegistration;
     private FirebaseAuth firebaseAuth;
     private TextView forgotPassword;
     String name, password;
@@ -36,34 +41,49 @@ public class MainActivity extends AppCompatActivity {
         FirebaseUser user = firebaseAuth.getCurrentUser();
 
         if(user != null){
-            startActivity(new Intent(MainActivity.this, ChatActivity.class));
+            startActivity(new Intent(MainActivity.this, Fingerprint.class));
         }
     }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        welcome=findViewById(R.id.welcome);
         Email = findViewById(R.id.email);
         Password = findViewById(R.id.password);
         Login = findViewById(R.id.btn_login);
+        forgetPassword = findViewById(R.id.forgetPassword);
         userRegistration = findViewById(R.id.btn_register);
 
         Login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 validate(Email.getText().toString(), Password.getText().toString());
+
             }
         });
 
         userRegistration.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this, RegisterActivity.class));
+                Intent a = new Intent(new Intent(MainActivity.this, RegisterActivity.class));
+                Pair[] pairs = new Pair[1];
+                pairs[0] = new Pair<View,String> (welcome,"login");
+                ActivityOptions activityOptions = ActivityOptions.makeSceneTransitionAnimation(MainActivity.this,pairs);
+                startActivity(a,activityOptions.toBundle());
+            }
+        });
+
+        forgetPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, PasswordActivity.class));
             }
         });
     }
+
 
     @Override
     public void onBackPressed(){//when you enter back press button, it will exit your application
@@ -80,9 +100,15 @@ public class MainActivity extends AppCompatActivity {
         password = Password.getText().toString();
 
 
-        if(name.isEmpty() || password.isEmpty()){//if you never enter any of this, it will not run and ask you to enter details first
-            Toast.makeText(this, "Please enter all the details", Toast.LENGTH_SHORT).show();
-        }else{
+        if(name.isEmpty())
+        {
+            Email.setError("Email is Empty!");
+        }
+        else if(password.isEmpty())
+        {
+            Password.setError("Password is Empty!");
+        }
+        else{
             result = true;
         }
 
@@ -96,21 +122,27 @@ public class MainActivity extends AppCompatActivity {
             String user_email = Email.getText().toString().trim();
             String user_password = Password.getText().toString().trim();
 
-            firebaseAuth.signInWithEmailAndPassword(userName, userPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                @Override
-                public void onComplete(@NonNull Task<AuthResult> task) {
-                    if (task.isSuccessful()) {
-                        Intent intent = new Intent(MainActivity.this, ChatActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(intent);
-                    } else {
-                        Toast.makeText(MainActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
+
+
+                firebaseAuth.signInWithEmailAndPassword(userName, userPassword).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+
+                            Intent intent = new Intent(MainActivity.this, ChatActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                        } else {
+                            Toast.makeText(MainActivity.this, "Login Failed", Toast.LENGTH_SHORT).show();
+                        }
                     }
-                }
-            });
+                });
+
+
+            }
         }
 
 
     }
-}
+
 

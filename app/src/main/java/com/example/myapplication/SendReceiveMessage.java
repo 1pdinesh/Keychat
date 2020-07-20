@@ -6,16 +6,23 @@ public class SendReceiveMessage {
     public String sender;
     public String receiver;
     public String type;
+    public String contentLocation;
+    public double lo;
 
+    public double la;
     public SendReceiveMessage() {
 
     }
 
-    public SendReceiveMessage(String message, String sender, String receiver, String type) {
+    public SendReceiveMessage(String message, String sender, String receiver, String type, String contentLocation,double longg,double lat) {
         this.message = message;
         this.sender = sender;
         this.receiver = receiver;
         this.type = type;
+        this.contentLocation = contentLocation;
+        this.lo=longg;
+        this.la=lat;
+
     }
 
     public String getMessage() {
@@ -45,9 +52,27 @@ public class SendReceiveMessage {
     public String getType() {
         return type;
     }
+    public String getContentLocation() {
+        return contentLocation;
+    }
 
     public void setType(String type) {
         this.type = type;
+    }
 
+    public double getLo() {
+        return lo;
+    }
+
+    public void setLo(double lo) {
+        this.lo = lo;
+    }
+
+    public double getLa() {
+        return la;
+    }
+
+    public void setLa(double la) {
+        this.la = la;
     }
 }

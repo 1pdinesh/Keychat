@@ -5,13 +5,9 @@
     android:padding="8dp"
     android:layout_height="wrap_content">
 
-
-
         <TextView
             android:id="@+id/show_message"
-            android:text="Hello"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
             android:textSize="20sp"
             android:padding="10dp"
             android:textColor="#fff"
@@ -26,5 +22,25 @@
             android:layout_alignParentEnd="true"
             android:layout_width="180dp"
             android:layout_height="180dp"/>
+
+    <ImageButton
+        android:id="@+id/map"
+        android:src="@drawable/googlemap"
+        android:scaleType="fitEnd"
+        android:layout_marginLeft="5dp"
+        android:layout_alignParentEnd="true"
+        android:layout_width="100dp"
+        android:visibility="gone"
+        android:layout_height="100dp"/>
+
+    <ImageButton
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:scaleType="fitEnd"
+        android:id="@+id/voiceMessageButton"
+        android:layout_marginLeft="5dp"
+        android:layout_alignParentEnd="true"
+        android:visibility="gone"
+        android:background="@drawable/ic_play_audio"/>
 
 </RelativeLayout>

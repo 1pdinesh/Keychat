@@ -21,7 +21,11 @@
 
         <EditText
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="45dp"
+            android:background="@drawable/edittext_design"
+            android:drawablePadding="10dp"
+            android:paddingLeft="5dp"
+            android:drawableLeft="@drawable/ic_play_user"
             android:id="@+id/username"
             android:enabled="false"
             android:layout_marginTop="10dp"
@@ -29,7 +33,11 @@
 
         <EditText
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="45dp"
+            android:background="@drawable/edittext_design"
+            android:drawablePadding="10dp"
+            android:paddingLeft="5dp"
+            android:drawableLeft="@drawable/ic_play_email"
             android:id="@+id/email"
             android:enabled="false"
             android:inputType="textEmailAddress"
@@ -38,7 +46,11 @@
 
         <EditText
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="45dp"
+            android:background="@drawable/edittext_design"
+            android:drawablePadding="10dp"
+            android:paddingLeft="5dp"
+            android:drawableLeft="@drawable/ic_play_mobile"
             android:id="@+id/mobile"
             android:enabled="false"
             android:inputType="number"
@@ -47,7 +59,11 @@
 
         <EditText
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="45dp"
+            android:background="@drawable/edittext_design"
+            android:drawablePadding="10dp"
+            android:paddingLeft="5dp"
+            android:drawableLeft="@drawable/ic_play_password"
             android:id="@+id/password"
             android:enabled="false"
             android:inputType="numberPassword"
@@ -73,8 +89,13 @@
             android:layout_marginTop="20dp"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
+            android:background="@drawable/button_design"
+            android:drawablePadding="10dp"
+            android:paddingRight="10dp"
+            android:paddingLeft="50dp"
+            android:drawableRight="@drawable/ic_play_register"
             android:visibility="invisible"
-            android:background="@color/colorPrimary"
+            android:textColor="#fff"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
 

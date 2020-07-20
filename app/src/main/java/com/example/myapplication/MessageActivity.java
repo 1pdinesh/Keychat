@@ -1,18 +1,6 @@
 package com.example.myapplication;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
-import java.text.SimpleDateFormat;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.Manifest;
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -22,7 +10,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.Color;
+import android.location.Location;
 import android.media.MediaRecorder;
 import android.net.Uri;
 import android.os.Build;
@@ -30,33 +18,29 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.util.TypedValue;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
-import android.media.MediaPlayer;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -69,10 +53,12 @@ import com.google.firebase.storage.UploadTask;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Date;
+import java.util.UUID;
 
 public class MessageActivity extends AppCompatActivity {
 
@@ -80,9 +66,12 @@ public class MessageActivity extends AppCompatActivity {
     MessageAdapter messageAdapter;
     List<SendReceiveMessage> mChat;
     private ImageButton send, voice, camera, gps;
-    private FirebaseUser firebaseUser;
+    protected FirebaseUser firebaseUser;
     private Toolbar toolbar;
 
+
+    private String uniqueId = UUID.randomUUID().toString();
+    private FirebaseAuth mFirebaseAuth;
     private Uri filepath;
     private RecyclerView recyclerView;
     private boolean notify = false;
@@ -92,19 +81,21 @@ public class MessageActivity extends AppCompatActivity {
     ArrayAdapter<String> arrayAdapter;
     Integer cameraRequest = 1, galleryRequest = 2;
     private static final int CAMERA_REQUEST_CODE = 5;
-    String timeStamp, mCurrentPhotoPath;;
+    String timeStamp, mCurrentPhotoPath;
+    ;
     //private static final int CAMERA_REQUEST_CODE = 100;
     //private static final int STORAGE_REQUEST_CODE = 200;
     private static final int IMAGE_PICK_CAMERA_CODE = 300;
     private static final int IMAGE_PICK_GALLERY_CODE = 400;
-    File photoFile = null ;
+    File photoFile = null;
 
     public static final int MY_PERMISSIONS_REQUEST_READ_EXTERNAL_STORAGE = 123;
-
+    private static final String REQUEST_MICROPHONE = Manifest.permission.RECORD_AUDIO;
     private MediaRecorder m;
-    private String audioName = null;
+    protected String audioName = null;
     private static final String LOG_TAG = "Record_log";
-    private StorageReference audioStorage;
+    private final int MY_PERMISSIONS_RECORD_AUDIO = 1;
+    public StorageReference audioStorage;
 
 
     @Override
@@ -152,6 +143,11 @@ public class MessageActivity extends AppCompatActivity {
         arrayAdapter = new ArrayAdapter<String>(MessageActivity.this, android.R.layout.simple_list_item_1, myArrayList);
 
 
+
+
+
+
+
         inputMessage.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -177,6 +173,8 @@ public class MessageActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
             }
         });
+
+
 
 
         send.setOnClickListener(new View.OnClickListener() {
@@ -205,6 +203,39 @@ public class MessageActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
         });
+        gps.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                GpsTracker gt = new GpsTracker(getApplicationContext());
+                Location l = gt.getLocation();
+                if (l == null) {
+                    Toast.makeText(getApplicationContext(), "GPS unable to get Value,open permission", Toast.LENGTH_SHORT).show();
+                } else {
+                    double lat = l.getLatitude();
+                    double lon = l.getLongitude();
+
+
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                    HashMap<String, Object> hashMap = new HashMap<>();
+                    hashMap.put("sender", firebaseUser.getUid());
+                    hashMap.put("receiver", getIntent().getStringExtra("id"));
+                    hashMap.put("longg", lon );
+                    hashMap.put("lat", lat );
+                    hashMap.put("timestamp", timeStamp );
+                    hashMap.put("type", "Location");
+
+                    databaseReference.child("Chats").push().setValue(hashMap);
+
+                }
+            }
+        });
+
+
+
+
+
+
+
 
         camera.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -239,6 +270,9 @@ public class MessageActivity extends AppCompatActivity {
         });
 
 
+
+
+
         voice.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -246,9 +280,11 @@ public class MessageActivity extends AppCompatActivity {
 
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
 
-                    startRecording();
 
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    requestAudioPermissions();
+                }
+
+                 else if (event.getAction() == MotionEvent.ACTION_UP) {
 
 
                     stopRecording();
@@ -264,6 +300,41 @@ public class MessageActivity extends AppCompatActivity {
         });
 
     }
+
+
+    private void requestAudioPermissions() {
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.RECORD_AUDIO)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            //When permission is not granted by user, show them message why this permission is needed.
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.RECORD_AUDIO)) {
+
+
+                //Give user option to still opt-in the permissions
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.RECORD_AUDIO},
+                        MY_PERMISSIONS_RECORD_AUDIO);
+
+            } else {
+                // Show user dialog to grant permission to record audio
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.RECORD_AUDIO},
+                        MY_PERMISSIONS_RECORD_AUDIO);
+            }
+        }
+        //If permission is granted, then go ahead recording audio
+        else if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.RECORD_AUDIO)
+                == PackageManager.PERMISSION_GRANTED) {
+
+            //Go ahead with recording audio now
+            startRecording();
+        }
+    }
+
+    //Handling callback
 
     public boolean checkPermissionREAD_EXTERNAL_STORAGE (final Context context){
         int currentAPIVersion = Build.VERSION.SDK_INT;
@@ -315,28 +386,11 @@ public class MessageActivity extends AppCompatActivity {
 
 
 
-
-        Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (cameraIntent.resolveActivity(getPackageManager()) != null)
-        {
-            try
-            {
-                photoFile = createImageFile();
-            }
-            catch (Exception ex)
-            {
-                ex.printStackTrace();
-                return;
-            }
-            if (photoFile != null)
-            {
-                Uri photoURI = FileProvider.getUriForFile(MessageActivity.this,
-                        "com.example.myapplication.fileprovider",
-                        photoFile);
-                cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(cameraIntent, IMAGE_PICK_CAMERA_CODE);
-            }
-        }
+        ContentValues cv = new ContentValues();
+        image_rui = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, cv);
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, image_rui);
+        startActivityForResult(intent, IMAGE_PICK_CAMERA_CODE);
 
     }
 
@@ -395,19 +449,48 @@ public class MessageActivity extends AppCompatActivity {
     }
 
 
-    private void uploadaudio() {
-        StorageReference filepath = audioStorage.child("audio").child("audio_new" + System.currentTimeMillis() + "audio.3gp");
-        Uri uri = Uri.fromFile(new File(audioName));
 
+    protected void uploadaudio() {
+
+        final StorageReference filepath = audioStorage.child("audio").child( uniqueId+ ".3gp");
+        final Uri uri = Uri.fromFile(new File(audioName));
+        final String downloadURl1 = filepath.getPath();
         filepath.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
             @Override
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                Toast.makeText(getApplicationContext(), "audio recorded", Toast.LENGTH_SHORT).show();
+                Task<Uri>uriTask = taskSnapshot.getStorage().getDownloadUrl();
+                while(!uriTask.isSuccessful());
+                String downloadURI = uriTask.getResult().toString();
+
+                if (uriTask.isSuccessful())
+                {
+
+                    DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
+                    HashMap<String, Object> hashMap = new HashMap<>();
+                    hashMap.put("sender", firebaseUser.getUid());
+                    hashMap.put("receiver", getIntent().getStringExtra("id"));
+                    hashMap.put("message", downloadURI);
+                    hashMap.put("timestamp", timeStamp );
+                    hashMap.put("type", "voice");
+                    hashMap.put("contentLocation",downloadURl1);
+
+
+
+
+
+
+                    databaseReference.child("Chats").push().setValue(hashMap);
+                }
+
             }
-
-
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                e.printStackTrace();
+            }
         });
     }
+
 
     private void sendMessage(String sender, String receiver, String message) {
         String timestamp = String.valueOf(System.currentTimeMillis());
@@ -447,16 +530,15 @@ public class MessageActivity extends AppCompatActivity {
 
     private void sendCameraMessage() throws IOException {
         final ProgressDialog progressDialog = new ProgressDialog(MessageActivity.this);
-        progressDialog.setTitle("Uploading...");
+        progressDialog.setTitle("sending image from camera");
         progressDialog.show();
 
-        File f = new File(mCurrentPhotoPath);
-        image_rui = Uri.fromFile(f);
+
         final String timeStamp = ""+System.currentTimeMillis();
         String fileNameAndPath = "ChatImages/"+"post_"+timeStamp;
         Bitmap bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), image_rui);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 0, baos);
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
         final byte[] data = baos.toByteArray();
         StorageReference ref = FirebaseStorage.getInstance().getReference().child(fileNameAndPath);
         ref.putBytes(data).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
@@ -475,6 +557,7 @@ public class MessageActivity extends AppCompatActivity {
                     hashMap.put("message", downloadURI);
                     hashMap.put("timestamp", timeStamp );
                     hashMap.put("type", "image");
+
                     databaseReference.child("Chats").push().setValue(hashMap);
                 }
 
@@ -550,7 +633,21 @@ public class MessageActivity extends AppCompatActivity {
             break;
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            case MY_PERMISSIONS_RECORD_AUDIO: {
+                if (grantResults.length > 0
+                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted, yay!
+                    startRecording();
+                } else {
+                    // permission denied, boo! Disable the
+                    // functionality that depends on this permission.
+                    Toast.makeText(this, "Permissions Denied to record audio", Toast.LENGTH_LONG).show();
+                }
+                return;
+            }
         }
+
+
     }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

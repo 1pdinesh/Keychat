@@ -1,67 +1,219 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusable="true"
+    android:focusableInTouchMode="true"
     tools:context=".RegisterActivity">
 
-    <LinearLayout
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:background="@drawable/header_register"
+        android:theme="@style/ToolbarTheme" />
+    />
+
+    <TextView
+        android:id="@+id/tvSignUp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:padding="16dp">
 
-        <EditText
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_centerHorizontal="true"
+        android:elevation="10dp"
+        android:text="Sign up"
+        android:textColor="@color/colorWhite"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:transitionName="login" />
+
+    <ImageView
+        android:id="@+id/circle2"
+        android:layout_width="182dp"
+        android:layout_height="182dp"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="-87dp"
+        android:layout_marginBottom="-40dp"
+        android:src="@drawable/circle" />
+
+    <ImageView
+        android:id="@+id/circleTes"
+        android:layout_width="134dp"
+        android:layout_height="134dp"
+        android:layout_below="@+id/toolbar"
+        android:layout_alignParentLeft="true"
+        android:layout_marginLeft="-50dp"
+        android:src="@drawable/circlet" />
+
+    <ScrollView
+        android:id="@+id/sv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/rlayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/username"
-            android:layout_marginTop="10dp"
-            android:hint="Username"/>
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_marginTop="60dp">
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/email"
-            android:inputType="textEmailAddress"
-            android:layout_marginTop="20dp"
-            android:hint="Email"/>
+            <androidx.cardview.widget.CardView
+                android:id="@+id/cv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                app:cardCornerRadius="10dp"
+                app:cardElevation="4dp">
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/mobile"
-            android:inputType="number"
-            android:layout_marginTop="20dp"
-            android:hint="Mobile Number"/>
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="450dp"
+                    android:paddingBottom="35dp">
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/password"
-            android:inputType="numberPassword"
-            android:layout_marginTop="20dp"
-            android:hint="Password"/>
+                    <TextView
+                        android:id="@+id/tvEmail"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:text="Email"
+                        android:textColor="@color/colorPurple"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
 
-        <EditText
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/confirmPwd"
-            android:inputType="numberPassword"
-            android:layout_marginTop="20dp"
-            android:hint="Confirm Password"/>
+                    <EditText
+                        android:id="@+id/email"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tvEmail"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp"
+                        android:drawablePadding="30dp"
+                        android:inputType="textEmailAddress"
+                        android:padding="10dp" />
 
-        <Button
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Register"
-            android:id="@+id/btn_register"
-            android:background="@color/colorPrimaryDark"
-            android:textColor="#fff"
-            android:layout_marginTop="20dp"/>
 
-    </LinearLayout>
+                    <TextView
+                        android:id="@+id/tvUsername"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/email"
+                        android:layout_margin="10dp"
+                        android:text="Username"
+                        android:textColor="@color/colorPurple"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/username"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tvUsername"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp"
+                        android:drawablePadding="30dp"
+                        android:inputType="text"
+                        android:padding="10dp" />
+
+                    <TextView
+                        android:id="@+id/mobiletv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/username"
+                        android:layout_margin="10dp"
+                        android:text="Mobile"
+                        android:textColor="@color/colorPurple"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/mobile"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/mobiletv"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp"
+                        android:drawablePadding="30dp"
+                        android:inputType="number"
+                        android:padding="10dp" />
+
+                    <TextView
+                        android:id="@+id/tvPassword"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/mobile"
+                        android:layout_margin="10dp"
+                        android:text="Password"
+                        android:textColor="@color/colorPurple"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/password"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tvPassword"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp"
+                        android:drawablePadding="30dp"
+                        android:inputType="numberPassword"
+                        android:padding="10dp" />
+
+                    <TextView
+                        android:id="@+id/tvRePassword"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/password"
+                        android:layout_margin="10dp"
+                        android:text="Retype Password"
+                        android:textColor="@color/colorPurple"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <EditText
+                        android:id="@+id/etRePassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tvRePassword"
+                        android:layout_marginLeft="15dp"
+                        android:layout_marginRight="15dp"
+                        android:drawablePadding="30dp"
+                        android:inputType="numberPassword"
+                        android:padding="10dp" />
+
+                </RelativeLayout>
+
+            </androidx.cardview.widget.CardView>
+
+            <RelativeLayout
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/cv"
+                android:layout_alignRight="@+id/cv"
+                android:layout_alignBottom="@+id/cv"
+                android:layout_centerHorizontal="true"
+                android:layout_marginLeft="35dp"
+                android:layout_marginRight="35dp"
+                android:layout_marginBottom="-20dp"
+                android:elevation="10dp">
+
+                <Button
+
+                    android:id="@+id/signup"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/bt_uisquare"
+                    android:text="Sign Up"
+                    android:textAllCaps="false"
+                    android:textColor="@color/colorWhite" />
+            </RelativeLayout>
+        </RelativeLayout>
+    </ScrollView>
 
 </RelativeLayout>
