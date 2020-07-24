@@ -42,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
-            android:layout_toLeftOf="@+id/camera"
+            android:layout_toLeftOf="@+id/gps"
             android:hint="Type a message" />
 
         <ImageButton
@@ -55,10 +55,12 @@
 
         <ImageButton
             android:id="@+id/gps"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:visibility="gone"
-             />
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_toLeftOf="@id/camera"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/ic_action_gps" />
 
     </RelativeLayout>
 
