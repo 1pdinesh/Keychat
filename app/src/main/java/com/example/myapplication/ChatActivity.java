@@ -57,7 +57,7 @@ public class ChatActivity extends AppCompatActivity {
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 arrayAdapter = new ArrayAdapter<String>(ChatActivity.this, android.R.layout.simple_list_item_1,myArrayList);
                 final UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
-                myArrayList.add(userProfile.getMobile());
+                myArrayList.add(userProfile.getUserName());
                 myArrayList1.add(userProfile.getToken());
                 arrayAdapter.notifyDataSetChanged();
                 listView.setAdapter(arrayAdapter);
