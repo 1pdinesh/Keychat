@@ -209,7 +209,7 @@ public class MessageActivity extends AppCompatActivity {
                 GpsTracker gt = new GpsTracker(getApplicationContext());
                 Location l = gt.getLocation();
                 if (l == null) {
-                    Toast.makeText(getApplicationContext(), "GPS unable to get Value,open permission", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Permission needed", Toast.LENGTH_SHORT).show();
                 } else {
                     double lat = l.getLatitude();
                     double lon = l.getLongitude();
@@ -225,7 +225,6 @@ public class MessageActivity extends AppCompatActivity {
                     hashMap.put("type", "Location");
 
                     databaseReference.child("Chats").push().setValue(hashMap);
-
                 }
             }
         });
