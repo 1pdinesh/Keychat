@@ -209,24 +209,22 @@ public class MessageActivity extends AppCompatActivity {
                 GpsTracker gt = new GpsTracker(getApplicationContext());
                 Location l = gt.getLocation();
                 if (l == null) {
+                    Toast.makeText(getApplicationContext(), "Permission needed", Toast.LENGTH_SHORT).show();
+                } else {
+                    double lat = l.getLatitude();
                     double lon = l.getLongitude();
+
 
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                     HashMap<String, Object> hashMap = new HashMap<>();
                     hashMap.put("sender", firebaseUser.getUid());
                     hashMap.put("receiver", getIntent().getStringExtra("id"));
                     hashMap.put("longg", lon );
+                    hashMap.put("lat", lat );
                     hashMap.put("timestamp", timeStamp );
                     hashMap.put("type", "Location");
 
                     databaseReference.child("Chats").push().setValue(hashMap);
-                } else {
-                    double lat = l.getLatitude();
-
-
-
-
-
                 }
             }
         });
