@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -18,7 +17,6 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -86,11 +84,11 @@ public class ProfileActivity extends AppCompatActivity {
             reference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
-                    username.setText(userProfile.getUserName());
-                    email.setText(userProfile.getUserEmail());
-                    password.setText(userProfile.getUserPassword());
-                    mobile.setText(userProfile.getMobile());
+                    UserRegistration userRegistration = dataSnapshot.getValue(UserRegistration.class);
+//                    username.setText(userProfile.getUserName());
+                    email.setText(userRegistration.getUserEmail());
+                    password.setText(userRegistration.getUserPassword());
+                 //   mobile.setText(userProfile.getMobile());
                 }
 
                 @Override
@@ -124,25 +122,25 @@ public class ProfileActivity extends AppCompatActivity {
         if(checkConnection() == false)
         {
             update.setVisibility(View.VISIBLE);
-            username.setEnabled(true);
+           // username.setEnabled(true);
             password.setEnabled(true);
-            mobile.setEnabled(true);
+           // mobile.setEnabled(true);
             update.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    name = username.getText().toString();
+                  //  name = username.getText().toString();
                     user_email = email.getText().toString();
                     passwords = password.getText().toString();
-                    userMobile = mobile.getText().toString();
+                  //  userMobile = mobile.getText().toString();
                     DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chat_Activity").child(firebaseUser.getUid());
                     String token = firebaseUser.getUid();
-                    UserProfile userProfile = new UserProfile(user_email, name, passwords, userMobile, token);
-                    reference.setValue(userProfile);
+                    UserRegistration userRegistration = new UserRegistration(user_email,  passwords, token);
+                    reference.setValue(userRegistration);
 
                     update.setVisibility(View.INVISIBLE);
-                    username.setEnabled(false);
+                 //   username.setEnabled(false);
                     mobile.setEnabled(false);
-                    password.setEnabled(false);
+                   // password.setEnabled(false);
                 }
             });
         }

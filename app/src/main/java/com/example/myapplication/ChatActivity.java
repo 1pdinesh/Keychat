@@ -56,9 +56,9 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 arrayAdapter = new ArrayAdapter<String>(ChatActivity.this, android.R.layout.simple_list_item_1,myArrayList);
-                final UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
-                myArrayList.add(userProfile.getUserName());
-                myArrayList1.add(userProfile.getToken());
+                final UserRegistration userRegistration = dataSnapshot.getValue(UserRegistration.class);
+               // myArrayList.add(userProfile.getUserName());
+                myArrayList1.add(userRegistration.getToken());
                 arrayAdapter.notifyDataSetChanged();
                 listView.setAdapter(arrayAdapter);
                 listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -139,10 +139,10 @@ public class ChatActivity extends AppCompatActivity {
                                     }
                                 });
                                 arrayAdapter = new ArrayAdapter<String>(ChatActivity.this, android.R.layout.simple_list_item_1,myArrayList);
-                                UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
+                                UserRegistration userRegistration = dataSnapshot.getValue(UserRegistration.class);
                                 arrayAdapter.notifyDataSetChanged();
                                 listView.setAdapter(arrayAdapter);
-                                reference1.child(String.valueOf(maxid+1)).setValue(userProfile);
+                                reference1.child(String.valueOf(maxid+1)).setValue(userRegistration);
                             }
 
                             @Override
