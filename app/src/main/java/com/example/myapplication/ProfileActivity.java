@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -19,6 +20,8 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -26,6 +29,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
+
+import java.util.HashMap;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -37,6 +47,7 @@ public class ProfileActivity extends AppCompatActivity {
     FirebaseUser firebaseUser;
     FirebaseAuth firebaseAuth;
     String name, user_email, passwords, userMobile;
+    CircleImageView userImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +58,7 @@ public class ProfileActivity extends AppCompatActivity {
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
         update = findViewById(R.id.btn_update);
+        userImage=findViewById(R.id.profileCircleImageView);
         show_password = findViewById(R.id.show_password);
         mobile = findViewById(R.id.mobile);
         toolbar = findViewById(R.id.toolbar);
@@ -84,11 +96,24 @@ public class ProfileActivity extends AppCompatActivity {
             reference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    UserRegistration userRegistration = dataSnapshot.getValue(UserRegistration.class);
-//                    username.setText(userProfile.getUserName());
+                    final UserRegistration userRegistration = dataSnapshot.getValue(UserRegistration.class);
+                   username.setText(userRegistration.getUserName());
                     email.setText(userRegistration.getUserEmail());
                     password.setText(userRegistration.getUserPassword());
-                 //   mobile.setText(userProfile.getMobile());
+                  mobile.setText(userRegistration.getMobile());
+
+                    Picasso.get().load(userRegistration.getImageurl()).networkPolicy(NetworkPolicy.OFFLINE)
+                            .into(userImage, new Callback() {
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onError(Exception e) {
+                                    Picasso.get().load(userRegistration.getImageurl()).into( userImage);
+                                }
+                            });
                 }
 
                 @Override
@@ -128,14 +153,48 @@ public class ProfileActivity extends AppCompatActivity {
             update.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                  //  name = username.getText().toString();
+                   name = username.getText().toString();
                     user_email = email.getText().toString();
                     passwords = password.getText().toString();
-                  //  userMobile = mobile.getText().toString();
+                   userMobile = mobile.getText().toString();
                     DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chat_Activity").child(firebaseUser.getUid());
                     String token = firebaseUser.getUid();
-                    UserRegistration userRegistration = new UserRegistration(user_email,  passwords, token);
-                    reference.setValue(userRegistration);
+
+
+
+                    HashMap<String, Object> StudentMap = new HashMap<>();
+                    StudentMap.put("userEmail", user_email);
+                    StudentMap.put("userPassword", passwords);
+                    StudentMap.put("token", token);
+
+
+                    reference.setValue(StudentMap)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task)
+                                {
+                                    if (task.isSuccessful())
+                                    {
+
+                                        Toast.makeText(ProfileActivity.this, "done", Toast.LENGTH_SHORT).show();
+                                    }
+                                    else
+                                    {
+
+                                        String message = task.getException().toString();
+                                        Toast.makeText(ProfileActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
+
+
+
+
+
+
+
+
 
                     update.setVisibility(View.INVISIBLE);
                  //   username.setEnabled(false);

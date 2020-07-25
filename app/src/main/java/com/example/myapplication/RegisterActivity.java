@@ -20,6 +20,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.HashMap;
+
 public class RegisterActivity extends AppCompatActivity {
 
     EditText  user_email, user_password, user_confirmPassword;
@@ -53,10 +55,9 @@ public class RegisterActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()){
                                 sendUserData();
-                                firebaseAuth.signOut();
                                 Toast.makeText(RegisterActivity.this, "Successfully Registered!", Toast.LENGTH_SHORT).show();
                                 finish();
-                                startActivity(new Intent(RegisterActivity.this, MainActivity.class));
+                                startActivity(new Intent(RegisterActivity.this, CreateProfile.class));
                             }else{
                                 checkConnection();
                             }
@@ -110,10 +111,42 @@ public class RegisterActivity extends AppCompatActivity {
         firebaseDatabase = FirebaseDatabase.getInstance();
         reference = firebaseDatabase.getReference("Chat_Activity").child(firebaseAuth.getUid());
       //  reference1 = firebaseDatabase.getReference("Profile_Activity").child(mobile);
-        String token = firebaseAuth.getUid();
-        UserRegistration userRegistration = new UserRegistration(email, password, token);
-        reference.setValue(userRegistration);
+
+
+
        // reference1.setValue(userProfile);
+
+        HashMap<String, Object> StudentMap = new HashMap<>();
+        StudentMap.put("userEmail", email);
+        StudentMap.put("userPassword", password);
+
+
+
+        reference.setValue(StudentMap)
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task)
+                    {
+                        if (task.isSuccessful())
+                        {
+
+                            Toast.makeText(RegisterActivity.this, "done", Toast.LENGTH_SHORT).show();
+                        }
+                        else
+                        {
+
+                            String message = task.getException().toString();
+                            Toast.makeText(RegisterActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+
+
+
+
+
+
     }
 
     private void checkConnection() {

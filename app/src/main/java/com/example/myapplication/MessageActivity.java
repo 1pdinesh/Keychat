@@ -20,15 +20,18 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -50,6 +53,8 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import org.w3c.dom.Text;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -60,6 +65,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class MessageActivity extends AppCompatActivity {
 
     private EditText inputMessage;
@@ -69,7 +76,8 @@ public class MessageActivity extends AppCompatActivity {
     protected FirebaseUser firebaseUser;
     private Toolbar toolbar;
 
-
+    CircleImageView userImage;
+    private TextView name;
     private String uniqueId = UUID.randomUUID().toString();
     private FirebaseAuth mFirebaseAuth;
     private Uri filepath;
@@ -131,6 +139,9 @@ public class MessageActivity extends AppCompatActivity {
 
         final String num = getIntent().getStringExtra("name");
         final String userid = getIntent().getStringExtra("id");
+        final String img = getIntent().getStringExtra("img");
+
+
 
         getSupportActionBar().setTitle(num);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
