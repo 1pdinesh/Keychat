@@ -87,21 +87,21 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
                     <TextView
-                        android:id="@+id/tvEmail"
+                        android:id="@+id/tvUsername"
                         android:layout_width="wrap_content"
                         android:layout_below="@+id/uploadimg"
                         android:layout_height="wrap_content"
                         android:layout_margin="10dp"
-                        android:text="Email"
+                        android:text="User Name"
                         android:textColor="@color/colorPurple"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/email"
+                        android:id="@+id/username"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/tvEmail"
+                        android:layout_below="@+id/tvUsername"
                         android:layout_marginLeft="15dp"
                         android:layout_marginRight="15dp"
                         android:drawablePadding="30dp"
@@ -154,21 +154,21 @@
                     <!--                        android:padding="10dp" />-->
 
                     <TextView
-                        android:id="@+id/tvPassword"
+                        android:id="@+id/mobiletv"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/email"
+                        android:layout_below="@+id/username"
                         android:layout_margin="10dp"
-                        android:text="Password"
+                        android:text="Mobile Number"
                         android:textColor="@color/colorPurple"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
                     <EditText
-                        android:id="@+id/password"
+                        android:id="@+id/mobile"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_below="@+id/tvPassword"
+                        android:layout_below="@+id/mobiletv"
                         android:layout_marginLeft="15dp"
                         android:layout_marginRight="15dp"
                         android:drawablePadding="30dp"
