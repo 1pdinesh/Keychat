@@ -137,13 +137,11 @@ public class MessageActivity extends AppCompatActivity {
         audioStorage = FirebaseStorage.getInstance().getReference();
 
 
-        final String num = getIntent().getStringExtra("name");
+        final String name = getIntent().getStringExtra("name");
         final String userid = getIntent().getStringExtra("id");
         final String img = getIntent().getStringExtra("img");
 
-
-
-        getSupportActionBar().setTitle(num);
+        getSupportActionBar().setTitle(name);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
