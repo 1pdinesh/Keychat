@@ -59,6 +59,7 @@ public class ChatActivity extends AppCompatActivity {
                 arrayAdapter = new ArrayAdapter<String>(ChatActivity.this, android.R.layout.simple_list_item_1,myArrayList);
                 final UserRegistration userRegistration = dataSnapshot.getValue(UserRegistration.class);
                myArrayList.add(userRegistration.getUserName());
+                myArrayList2.add(userRegistration.getImageurl());
                 myArrayList1.add(userRegistration.getToken());
                 arrayAdapter.notifyDataSetChanged();
                 listView.setAdapter(arrayAdapter);
@@ -68,9 +69,11 @@ public class ChatActivity extends AppCompatActivity {
 
                         String a = myArrayList.get(position);
                         String b = myArrayList1.get(position);
+                        String c= myArrayList2.get(position);
                         Intent intent = new Intent(ChatActivity.this, MessageActivity.class);
                         intent.putExtra("name", a);
                         intent.putExtra("id",b);
+                        intent.putExtra("img",c);
                         startActivity(intent);
                     }
                 });

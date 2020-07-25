@@ -145,7 +145,7 @@ public class MessageActivity extends AppCompatActivity {
 
         final String name = getIntent().getStringExtra("name");
         final String userid = getIntent().getStringExtra("id");
-
+        final String imgg = getIntent().getStringExtra("img");
 
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
@@ -160,14 +160,9 @@ public class MessageActivity extends AppCompatActivity {
         Name.setText(name);
         firebaseAuth = FirebaseAuth.getInstance();
         firebaseUser = firebaseAuth.getCurrentUser();
-        reference = FirebaseDatabase.getInstance().getReference("Chat_Activity").child(firebaseUser.getUid());
-        if(checkConnection() == false) {
-            reference.addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    final UserRegistration userRegistration = dataSnapshot.getValue(UserRegistration.class);
 
-                    Picasso.get().load(userRegistration.getImageurl()).networkPolicy(NetworkPolicy.OFFLINE)
+
+                    Picasso.get().load(imgg).networkPolicy(NetworkPolicy.OFFLINE)
                             .into(img, new Callback() {
                                 @Override
                                 public void onSuccess() {
@@ -176,17 +171,12 @@ public class MessageActivity extends AppCompatActivity {
 
                                 @Override
                                 public void onError(Exception e) {
-                                    Picasso.get().load(userRegistration.getImageurl()).into(img);
+                                    Picasso.get().load(imgg).into(img);
                                 }
                             });
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    Toast.makeText(MessageActivity.this, databaseError.getCode(), Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
+
+
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
