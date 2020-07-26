@@ -42,6 +42,8 @@ public class MainActivity extends AppCompatActivity {
 
         if(user != null){
             //startActivity(new Intent(MainActivity.this, Fingerprint.class));
+            // if user alrd logged in, redirect to fingerprint class
+            //create biometric class and replace fingerprint class w new class
         }
     }
 
