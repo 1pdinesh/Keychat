@@ -396,22 +396,32 @@ public class MessageActivity extends AppCompatActivity {
 
         try {
             m.prepare();
-
+            m.start();
         } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
+            e.printStackTrace();
         }
-
-        m.start();
 
     }
 
     private void stopRecording() {
-        m.stop();
-        m.release();
-        m = null;
+        try {
+            m.stop();
+        }
+        catch(RuntimeException e) {
+        }
+        finally {
+            m.release();
+            m = null;
+            uploadaudio();
+        }
 
 
-        uploadaudio();
+
+
+
+
+
+
     }
 
 
