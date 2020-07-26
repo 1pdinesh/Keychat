@@ -279,8 +279,8 @@ public class MessageActivity extends AppCompatActivity {
 
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
 
-
-                    requestAudioPermissions();
+                    //Go ahead with recording audio now
+                    startRecording();
                 }
 
                  else if (event.getAction() == MotionEvent.ACTION_UP) {
@@ -298,39 +298,6 @@ public class MessageActivity extends AppCompatActivity {
 
         });
 
-    }
-
-
-    private void requestAudioPermissions() {
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.RECORD_AUDIO)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            //When permission is not granted by user, show them message why this permission is needed.
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.RECORD_AUDIO)) {
-
-
-                //Give user option to still opt-in the permissions
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.RECORD_AUDIO},
-                        MY_PERMISSIONS_RECORD_AUDIO);
-
-            } else {
-                // Show user dialog to grant permission to record audio
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.RECORD_AUDIO},
-                        MY_PERMISSIONS_RECORD_AUDIO);
-            }
-        }
-        //If permission is granted, then go ahead recording audio
-        else if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.RECORD_AUDIO)
-                == PackageManager.PERMISSION_GRANTED) {
-
-            //Go ahead with recording audio now
-            startRecording();
-        }
     }
 
     //Handling callback
