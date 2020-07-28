@@ -1,22 +1,33 @@
 package com.example.myapplication;
 
-public class UserProfile {
+public class UserRegistration {
     public String userEmail;
     public String userName;
     public String userPassword;
-    public String mobile;
+   public String mobile;
     public String token;
 
+    public String getImageurl() {
+        return Imageurl;
+    }
+
+    public void setImageurl(String imageurl) {
+        Imageurl = imageurl;
+    }
+
+    private String Imageurl;
 
 
-    public UserProfile(String userEmail, String userName, String userPassword, String mobile, String token) {
+
+    public UserRegistration(String userEmail, String userPassword, String token,String userName,String mobile,String Imageurl) {
         this.userEmail = userEmail;
         this.userName = userName;
         this.userPassword = userPassword;
         this.mobile = mobile;
         this.token = token;
+        this.Imageurl =Imageurl;
     }
-    public UserProfile(){
+    public UserRegistration(){
 
     }
 

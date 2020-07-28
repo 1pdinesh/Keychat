@@ -12,6 +12,8 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.location.Location;
 import android.media.MediaRecorder;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -20,15 +22,20 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -49,6 +56,11 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
+
+import org.w3c.dom.Text;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -60,6 +72,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class MessageActivity extends AppCompatActivity {
 
     private EditText inputMessage;
@@ -68,8 +82,10 @@ public class MessageActivity extends AppCompatActivity {
     private ImageButton send, voice, camera, gps;
     protected FirebaseUser firebaseUser;
     private Toolbar toolbar;
+    FirebaseAuth firebaseAuth;
 
-
+    CircleImageView img;
+    TextView Name;
     private String uniqueId = UUID.randomUUID().toString();
     private FirebaseAuth mFirebaseAuth;
     private Uri filepath;
@@ -103,15 +119,13 @@ public class MessageActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_message);
 
-
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
 
 
         send = findViewById(R.id.send);
         camera = findViewById(R.id.camera);
+
         inputMessage = findViewById(R.id.inputMessage);
         recyclerView = findViewById(R.id.messageList);
         recyclerView.setHasFixedSize(true);
@@ -129,11 +143,40 @@ public class MessageActivity extends AppCompatActivity {
         audioStorage = FirebaseStorage.getInstance().getReference();
 
 
-        final String num = getIntent().getStringExtra("name");
+        final String name = getIntent().getStringExtra("name");
         final String userid = getIntent().getStringExtra("id");
+        final String imgg = getIntent().getStringExtra("img");
 
-        getSupportActionBar().setTitle(num);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        ActionBar ab=getSupportActionBar();
+        ab.setDisplayShowCustomEnabled(true);
+        ab.setDisplayHomeAsUpEnabled(true);
+        LayoutInflater li =(LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View action=li.inflate(R.layout.custom_bar,null);
+        ab.setCustomView(action);
+        img=findViewById(R.id.profileee);
+        Name=findViewById(R.id.realname);
+        Name.setText(name);
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+
+
+                    Picasso.get().load(imgg).networkPolicy(NetworkPolicy.OFFLINE)
+                            .into(img, new Callback() {
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onError(Exception e) {
+                                    Picasso.get().load(imgg).into(img);
+                                }
+                            });
+
+
+
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -650,6 +693,20 @@ public class MessageActivity extends AppCompatActivity {
             }
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+    private Boolean checkConnection() {
+        Boolean result = true;
+        ConnectivityManager manager = (ConnectivityManager)getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = manager.getActiveNetworkInfo();
+        if(activeNetwork == null)
+        {
+            Toast.makeText(this, "No Internet Connection!", Toast.LENGTH_SHORT).show();
+        }
+        else
+        {
+            result = false;
+        }
+        return result;
     }
 }
 

@@ -18,9 +18,10 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -28,6 +29,13 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.NetworkPolicy;
+import com.squareup.picasso.Picasso;
+
+import java.util.HashMap;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileActivity extends AppCompatActivity {
 
@@ -39,6 +47,7 @@ public class ProfileActivity extends AppCompatActivity {
     FirebaseUser firebaseUser;
     FirebaseAuth firebaseAuth;
     String name, user_email, passwords, userMobile;
+    CircleImageView userImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +58,7 @@ public class ProfileActivity extends AppCompatActivity {
         email = findViewById(R.id.email);
         password = findViewById(R.id.password);
         update = findViewById(R.id.btn_update);
+        userImage=findViewById(R.id.profileCircleImageView);
         show_password = findViewById(R.id.show_password);
         mobile = findViewById(R.id.mobile);
         toolbar = findViewById(R.id.toolbar);
@@ -86,11 +96,24 @@ public class ProfileActivity extends AppCompatActivity {
             reference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    UserProfile userProfile = dataSnapshot.getValue(UserProfile.class);
-                    username.setText(userProfile.getUserName());
-                    email.setText(userProfile.getUserEmail());
-                    password.setText(userProfile.getUserPassword());
-                    mobile.setText(userProfile.getMobile());
+                    final UserRegistration userRegistration = dataSnapshot.getValue(UserRegistration.class);
+                   username.setText(userRegistration.getUserName());
+                    email.setText(userRegistration.getUserEmail());
+                    password.setText(userRegistration.getUserPassword());
+                  mobile.setText(userRegistration.getMobile());
+
+                    Picasso.get().load(userRegistration.getImageurl()).networkPolicy(NetworkPolicy.OFFLINE)
+                            .into(userImage, new Callback() {
+                                @Override
+                                public void onSuccess() {
+
+                                }
+
+                                @Override
+                                public void onError(Exception e) {
+                                    Picasso.get().load(userRegistration.getImageurl()).into( userImage);
+                                }
+                            });
                 }
 
                 @Override
@@ -124,25 +147,59 @@ public class ProfileActivity extends AppCompatActivity {
         if(checkConnection() == false)
         {
             update.setVisibility(View.VISIBLE);
-            username.setEnabled(true);
+           // username.setEnabled(true);
             password.setEnabled(true);
-            mobile.setEnabled(true);
+           // mobile.setEnabled(true);
             update.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    name = username.getText().toString();
+                   name = username.getText().toString();
                     user_email = email.getText().toString();
                     passwords = password.getText().toString();
-                    userMobile = mobile.getText().toString();
+                   userMobile = mobile.getText().toString();
                     DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Chat_Activity").child(firebaseUser.getUid());
                     String token = firebaseUser.getUid();
-                    UserProfile userProfile = new UserProfile(user_email, name, passwords, userMobile, token);
-                    reference.setValue(userProfile);
+
+
+
+                    HashMap<String, Object> StudentMap = new HashMap<>();
+                    StudentMap.put("userEmail", user_email);
+                    StudentMap.put("userPassword", passwords);
+                    StudentMap.put("token", token);
+
+
+                    reference.setValue(StudentMap)
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task)
+                                {
+                                    if (task.isSuccessful())
+                                    {
+
+                                        Toast.makeText(ProfileActivity.this, "done", Toast.LENGTH_SHORT).show();
+                                    }
+                                    else
+                                    {
+
+                                        String message = task.getException().toString();
+                                        Toast.makeText(ProfileActivity.this, "Error: " + message, Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            });
+
+
+
+
+
+
+
+
+
 
                     update.setVisibility(View.INVISIBLE);
-                    username.setEnabled(false);
+                 //   username.setEnabled(false);
                     mobile.setEnabled(false);
-                    password.setEnabled(false);
+                   // password.setEnabled(false);
                 }
             });
         }
