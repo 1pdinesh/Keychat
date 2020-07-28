@@ -4,13 +4,15 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import androidx.biometric.BiometricPrompt;
-
-
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;
@@ -27,8 +29,12 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
+
 
 public class MainActivity extends AppCompatActivity {
 
@@ -40,12 +46,13 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     private TextView forgotPassword;
     String name, password;
+    public static final int REQUEST_ID_MULTIPLE_PERMISSIONS = 1;
 
     @RequiresApi(api = Build.VERSION_CODES.P)
     @Override
     protected void onStart() {
         super.onStart();
-
+        checkAndRequestPermissions();
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser user = firebaseAuth.getCurrentUser();
 
@@ -92,6 +99,11 @@ public class MainActivity extends AppCompatActivity {
             //create biometric class and replace fingerprint class w new class
         }
     }
+
+
+
+
+
 
 
     @Override
@@ -189,7 +201,29 @@ public class MainActivity extends AppCompatActivity {
 
             }
         }
+    private  boolean checkAndRequestPermissions() {
+        int permissionRecordAudio = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.RECORD_AUDIO);
+        int permissionExternalStorage = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.READ_EXTERNAL_STORAGE);
+        int locationPermission = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        List<String> listPermissionsNeeded = new ArrayList<>();
 
+        if (locationPermission != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.ACCESS_FINE_LOCATION);
+        }
+        if (permissionExternalStorage != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+        if (permissionRecordAudio != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.RECORD_AUDIO);
+        }
+        if (!listPermissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]),REQUEST_ID_MULTIPLE_PERMISSIONS);
+            return false;
+        }
+        return true;
+    }
 
     }
 
