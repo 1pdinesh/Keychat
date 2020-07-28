@@ -5,7 +5,7 @@ android {
     buildToolsVersion "29.0.3"
     defaultConfig {
         applicationId "com.example.myapplication"
-        minSdkVersion 23
+        minSdkVersion 24
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -45,10 +45,9 @@ dependencies {
     implementation 'com.google.android.gms:play-services-gcm:17.0.0'
     implementation 'com.google.android.gms:play-services-location:17.0.0'
     implementation 'androidx.multidex:multidex:2.0.0'
-    implementation 'com.squareup.picasso:picasso:2.71828'
-    implementation 'com.github.f0ris.sweetalert:library:1.5.6'
-    api 'com.theartofdev.edmodo:android-image-cropper:2.8.+'
-    implementation "de.hdodenhof:circleimageview:3.0.0"
+    implementation 'androidx.biometric:biometric:1.0.0-alpha04'
+
+
 
 }
 apply plugin: 'com.google.gms.google-services'
