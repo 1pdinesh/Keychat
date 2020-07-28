@@ -209,7 +209,7 @@ public class MessageActivity extends AppCompatActivity {
                 GpsTracker gt = new GpsTracker(getApplicationContext());
                 Location l = gt.getLocation();
                 if (l == null) {
-                    Toast.makeText(getApplicationContext(), "Permission needed", Toast.LENGTH_SHORT).show();
+                   Log.d("state","allow acess");
                 } else {
                     double lat = l.getLatitude();
                     double lon = l.getLongitude();
