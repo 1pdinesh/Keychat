@@ -1,12 +1,17 @@
 package com.example.myapplication;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
 import android.content.Intent;
+import androidx.biometric.BiometricPrompt;
+
+
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Pair;
 import android.view.View;
@@ -22,6 +27,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+
 public class MainActivity extends AppCompatActivity {
 
     private EditText Email, Password;
@@ -33,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView forgotPassword;
     String name, password;
 
+    @RequiresApi(api = Build.VERSION_CODES.P)
     @Override
     protected void onStart() {
         super.onStart();
@@ -40,8 +49,47 @@ public class MainActivity extends AppCompatActivity {
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser user = firebaseAuth.getCurrentUser();
 
+
+        Executor executor = Executors.newSingleThreadExecutor();
+
+
+
+        final BiometricPrompt biometricPrompt = new BiometricPrompt(this, executor, new BiometricPrompt.AuthenticationCallback() {
+            @Override
+            public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
+                super.onAuthenticationError(errorCode, errString);
+                if (errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON) {
+                    // user clicked negative button
+                } else {
+                    //TODO: Called when an unrecoverable error has been encountered and the operation is complete.
+                }
+            }
+            @Override
+            public void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+                super.onAuthenticationSucceeded(result);
+
+                startActivity(new Intent(getApplicationContext(),ChatActivity.class));
+
+            }
+            @Override
+            public void onAuthenticationFailed() {
+                super.onAuthenticationFailed();
+                //TODO: Called when a biometric is valid but not recognized.
+            }
+        });
+        final BiometricPrompt.PromptInfo promptInfo = new BiometricPrompt.PromptInfo.Builder()
+                .setTitle(getString(R.string.biometric_title))
+                .setSubtitle(getString(R.string.biometric_subtitle))
+                .setNegativeButtonText(getString(R.string.biometric_negative_button_text))
+                .build();
+
+
+
         if(user != null){
-            startActivity(new Intent(MainActivity.this, Fingerprint.class));
+            biometricPrompt.authenticate(promptInfo);
+
+            // if user alrd logged in, redirect to fingerprint class
+            //create biometric class and replace fingerprint class w new class
         }
     }
 
