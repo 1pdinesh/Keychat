@@ -59,6 +59,7 @@ public class ChatActivity extends AppCompatActivity {
                 arrayAdapter = new ArrayAdapter<String>(ChatActivity.this, android.R.layout.simple_list_item_1,myArrayList);
                 final UserRegistration userRegistration = dataSnapshot.getValue(UserRegistration.class);
                myArrayList.add(userRegistration.getUserName());
+               //This is the code that i have changed//
                 myArrayList2.add(userRegistration.getImageurl());
                 myArrayList1.add(userRegistration.getToken());
                 arrayAdapter.notifyDataSetChanged();
