@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
         Executor executor = Executors.newSingleThreadExecutor();
 
 
-
+//fingerprint changes made here
         final BiometricPrompt biometricPrompt = new BiometricPrompt(this, executor, new BiometricPrompt.AuthenticationCallback() {
             @Override
             public void onAuthenticationError(int errorCode, @NonNull CharSequence errString) {
@@ -167,6 +167,7 @@ public class MainActivity extends AppCompatActivity {
         else if(password.isEmpty())
         {
             Password.setError("Password is Empty!");
+
         }
         else{
             result = true;
