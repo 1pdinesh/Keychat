@@ -256,7 +256,7 @@ public class MessageActivity extends AppCompatActivity {
                 } else {
                     double lat = l.getLatitude();
                     double lon = l.getLongitude();
-
+                    //GPS is working well//
 
                     DatabaseReference databaseReference = FirebaseDatabase.getInstance().getReference();
                     HashMap<String, Object> hashMap = new HashMap<>();
